@@ -1,5 +1,6 @@
 package com.bkct.interceptor;
 
+import org.apache.log4j.Logger;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -14,6 +15,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         System.out.println("request.getRequestURI().indexOflogin" + request.getRequestURI().indexOf("/login"));
         System.out.println(request.getRequestURI());
         System.out.println(request.getSession().getAttribute("username"));
+        Logger log = Logger.getLogger(LoginInterceptor.class);
+        log.info(request.getMethod());
 
         if (request.getRequestURI().indexOf("/login") >= 0 ) {
             return true;
