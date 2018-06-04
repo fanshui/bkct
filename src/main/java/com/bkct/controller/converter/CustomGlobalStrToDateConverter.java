@@ -8,6 +8,7 @@ import java.util.Date;
 
 public class CustomGlobalStrToDateConverter implements Converter<String,Date> {
 
+    @Override
     public Date convert(String s) {
         try {
             Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(s);
