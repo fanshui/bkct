@@ -1,4 +1,4 @@
-package com.bkct.controller.converter;
+package com.bkct.converter;
 
 import org.springframework.core.convert.converter.Converter;
 

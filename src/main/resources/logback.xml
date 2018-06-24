@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+    <contextName>bkct</contextName>
+    <!-- 日志文件存储路径 -->
+    <property name="LOG_HOME" value="C:/logs" />
+    <property name="APP_PATH" value="bkct"/>
+
+    <!--控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder  class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%red(%d{yyyy-MM-dd HH:mm:ss.SSS}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) -%cyan(%msg%n)</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+    </appender>
+
+    <!-- 按照每天生成日志文件 -->
+    <!--INFO-->
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/${APP_PATH}/log_info.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${LOG_HOME}/${APP_PATH}/info/log-info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>360</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>2MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--Controller Request-->
+    <appender name="REQUEST_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/${APP_PATH}/log_request_info.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/${APP_PATH}/info/request/log-info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>360</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>2MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--ERROR-->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/${APP_PATH}/log_error.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/${APP_PATH}/error/log-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>360</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>2MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 异步日志配置 -->
+    <appender name="INFO_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>256</queueSize>
+        <appender-ref ref="INFO" />
+    </appender>
+
+    <appender name="REQUEST_INFO_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>256</queueSize>
+        <appender-ref ref="REQUEST_INFO" />
+    </appender>
+    <appender name="ERROR_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>256</queueSize>
+        <appender-ref ref="ERROR" />
+    </appender>
+
+
+    <!-- 为某个包下的所有类的指定Appender 这里也可以指定类名称例如： -->
+    <!--对controller的请求日志-->
+    <logger name="com.bkct.controller" additivity="false">
+        <level value="info" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="REQUEST_INFO_ASYNC" />
+        <appender-ref ref="ERROR_ASYNC" />
+    </logger>
+
+    <logger name="org.springframework.web" additivity="false">
+        <level value="info" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="INFO_ASYNC" />
+        <appender-ref ref="ERROR_ASYNC" />
+    </logger>
+
+    <!--日志的输出级别由低到高（越来问题越严重）trace->debug->info->warn->error -->
+    <!-- root将级别为DEBUG及大于DEBUG的日志信息交给已经配置好的name='stdout'的appender处理，将信息打印到控制台-Console -->
+    <root level="info">
+        <!-- appender-ref标识这个appender将会添加到本应用的日志系统中 -->
+        <!--<appender-ref ref="STDOUT"/>-->
+        <appender-ref ref="INFO_ASYNC" />
+        <appender-ref ref="ERROR_ASYNC" />
+    </root>
+
+
+</configuration>

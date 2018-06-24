@@ -5,30 +5,37 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context.xsd
             http://www.springframework.org/schema/aop
             http://www.springframework.org/schema/aop/spring-aop.xsd
-            http://www.springframework.org/schema/tx 
+            http://www.springframework.org/schema/tx
             http://www.springframework.org/schema/tx/spring-tx.xsd
             http://www.springframework.org/schema/mvc
             http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
+    <context:component-scan base-package="com.bkct"/>
 
     <!--自动加载处理器映射器 处理器适配器-->
     <mvc:annotation-driven conversion-service="conversionService">
+        <mvc:message-converters>
+            <bean  class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <!-- MediaTypes -->
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json</value>
+                    </list>
+                </property>
+                <!-- FastJsonConfig -->
+                <property name="fastJsonConfig" ref="fastJsonConfig" />
+            </bean>
+        </mvc:message-converters>
     </mvc:annotation-driven>
-
-    <context:component-scan base-package="com.bkct.controller"/>
-
-
 
     <mvc:resources mapping="/html/**" location="/html/"/>
     <mvc:resources mapping="/js/**" location="/js/"/>
-
-
 
     <!--HTML视图解析器-->
     <bean id="htmlviewResolver"
@@ -39,13 +46,52 @@
         <property name="suffix" value=".html" />
         <property name="contentType" value="text/html;charset=UTF-8"/>
     </bean>
-    <!--jsp视图解析器-->
-    <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="order" value="1" />
-        <property name="prefix" value="/WEB-INF/jsp/"/>
-        <property name="suffix" value=".jsp"/>
+    <!--&lt;!&ndash;jsp视图解析器&ndash;&gt;-->
+    <!--<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+        <!--<property name="order" value="1" />-->
+        <!--<property name="prefix" value="/WEB-INF/jsp/"/>-->
+        <!--<property name="suffix" value=".jsp"/>-->
+    <!--</bean>-->
+
+    <!--fastjson-->
+    <bean id="fastJsonConfig" class="com.alibaba.fastjson.support.config.FastJsonConfig">
+        <!-- Default charset -->
+        <property name="charset" value="UTF-8"/>
+        <!-- Default dateFormat -->
+        <property name="dateFormat" value="yyyy-MM-dd HH:mm:ss"/>
+        <!-- Feature -->
+        <property name="features">
+            <list>
+                <value>OrderedField</value>
+            </list>
+        </property>
+        <!-- SerializerFeature -->
+        <!--<property name="serializerFeatures">-->
+            <!---->
+        <!--</property>-->
+        <!-- Global SerializeFilter -->
+        <!--<property name="serializeFilters">-->
+        <!--<list>-->
+        <!--<ref bean="Your serializer filter"/>-->
+        <!--</list>-->
+        <!--</property>-->
+        <!-- Class Level SerializeFilter -->
+        <!--<property name="classSerializeFilters">-->
+        <!--<map>-->
+        <!--<entry key="Your filter class" value-ref="Your serializer filter"/>-->
+        <!--</map>-->
+        <!--</property>-->
     </bean>
 
+    <!--自定义转换器-->
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <!-- 指定自定义转换器的全路径名称 -->
+                <bean class="com.bkct.converter.CustomGlobalStrToDateConverter"/>
+            </set>
+        </property>
+    </bean>
 
     <!--文件上传 resolveLazily属性是为了推迟文件及解析，以便捕获文件大小异常-->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -55,15 +101,5 @@
     </bean>
 
 
-    <!--自定义转换器-->
-    <bean id="conversionService"
-          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
-        <property name="converters">
-            <set>
-                <!-- 指定自定义转换器的全路径名称 -->
-                <bean class="com.bkct.controller.converter.CustomGlobalStrToDateConverter"/>
-            </set>
-        </property>
-    </bean>
 
 </beans>

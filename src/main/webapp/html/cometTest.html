@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CometTest</title>
+    <script>
+        function CometEx() {
+            var request =  new XMLHttpRequest();
+            request.open("GET", '/cometServlet', true);
+            request.onreadystatechange = function () {
+                if (request.readyState == 3 && request.status == 200) {
+                    alert(request.responseText);
+                }
+            }
+            request.send(null);
+        }
+    </script>
+</head>
+<body>
+    <h1>CometTest</h1>
+    <button onclick="CometEx()">send</button>
+</body>
+</html>
