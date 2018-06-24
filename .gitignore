@@ -27,6 +27,6 @@ hs_err_pid*
 #other file
 *.iml
 target/
-testfile/##something confligt
+testfile/test/
 output/
 out/
