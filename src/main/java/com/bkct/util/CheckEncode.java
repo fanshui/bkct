@@ -1,13 +1,20 @@
 package com.bkct.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 public class CheckEncode {
+    private static Logger logger = LoggerFactory.getLogger(CheckEncode.class);
 	public static String getEncoding(String str){
         try {
             String encode = "gb2312";
             if (str.equals(new String(str.getBytes(encode), encode))) { //判断是不是GB2312
+                 logger.info("info com.bkct.util CheckEncode gb2312");
+                 logger.debug("debug com.bkct.util CheckEncode gb2312");
+                 logger.error("error com.bkct.util CheckEncode gb2312");
                 return encode;
             }
             encode = "ISO-8859-1";
